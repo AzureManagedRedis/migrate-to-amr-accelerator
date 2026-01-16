@@ -13,6 +13,10 @@ Use this script when you need detailed usage data (Operations/Sec, Used Memory, 
 ## Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/AzureManagedRedis/migrate-to-amr-accelerator.git
+cd migrate-to-amr-accelerator
+
 # Recommended: Create a virtual environment
 python -m venv venv
 # Windows

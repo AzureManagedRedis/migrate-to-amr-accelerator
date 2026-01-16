@@ -10,6 +10,14 @@ Use this script if you prefer a PowerShell environment to collect workload metri
 - **Az PowerShell Module** (`Install-Module -Name Az`)
 - Authenticated session (`Connect-AzAccount`)
 
+## Installation
+
+```powershell
+# Clone the repository
+git clone https://github.com/AzureManagedRedis/migrate-to-amr-accelerator.git
+cd migrate-to-amr-accelerator/inventory/PowerShell
+```
+
 ## Usage
 
 ```powershell

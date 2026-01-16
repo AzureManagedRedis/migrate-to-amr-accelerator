@@ -62,8 +62,8 @@ Microsoft.Cache/redisenterprise/redisInstances/read
 
 ```bash
 # Clone and setup
-git clone https://github.com/Redislabs-Solution-Architects/acrp2acre.git
-cd acrp2acre
+git clone https://github.com/AzureManagedRedis/migrate-to-amr-accelerator.git
+cd migrate-to-amr-accelerator
 python3 -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
