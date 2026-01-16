@@ -245,7 +245,7 @@ def main():
 
     metrics = [[sub_info[0]] + shard_stats
                for sub_info in get_subscription_info(azure_credential)
-               for oss_clusters, enterprise_clusters in [list_clusters(azure_credential, sub_info[0], args.pullAcre)]
+               for oss_clusters, enterprise_clusters in [list_clusters(azure_credential, sub_info[0])]
                for cluster in oss_clusters + enterprise_clusters
                for shard_stats in process_cluster(cluster, sub_info[1])]
 

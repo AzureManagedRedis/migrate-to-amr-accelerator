@@ -72,27 +72,27 @@ pip install -r requirements.txt
 az login
 
 # Run discovery
-python discoverRedisSKUs.py -v
+python discovery/discoverRedisSKUs.py -v
 ```
 
 ### Usage Examples
 
 ```bash
 # Scan all accessible subscriptions
-python discoverRedisSKUs.py
+python discovery/discoverRedisSKUs.py
 
 # Scan specific subscriptions
-python discoverRedisSKUs.py -s "sub-id-1,sub-id-2"
+python discovery/discoverRedisSKUs.py -s "sub-id-1,sub-id-2"
 
 # Verbose output with custom path
-python discoverRedisSKUs.py -v -o /path/to/inventory.xlsx
+python discovery/discoverRedisSKUs.py -v -o /path/to/inventory.xlsx
 
 # JSON output for automation
-python discoverRedisSKUs.py -f json -o inventory.json
+python discovery/discoverRedisSKUs.py -f json -o inventory.json
 
 # Exclude Azure Managed Redis
 ```bash
-python discoverRedisSKUs.py --exclude-amr
+python discovery/discoverRedisSKUs.py --exclude-amr
 ```
 
 ## Comparison: Discovery vs Metrics Script

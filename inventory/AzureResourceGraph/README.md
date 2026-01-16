@@ -4,7 +4,7 @@ This folder contains Kusto Query Language (KQL) queries for performing a high-le
 
 ## Purpose
 Use this query when you need a **fast, instant list** of all Redis resources across your entire tenant/management group, without waiting for metric collection. This is useful for:
-- Identifying all Redis assets.
+- Identifying all Azure Cache for Redis assets.
 - Checking SKU distribution.
 - verifying Provisioning State.
 

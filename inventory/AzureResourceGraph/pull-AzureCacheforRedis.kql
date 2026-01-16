@@ -1,26 +1,45 @@
+(
 resources
 | where type =~ 'Microsoft.Cache/redis'
 | extend vnetId = tostring(properties.subnetId)
 | extend
-    family = tostring(properties.sku.family),
-    capacityInt = toint(properties.sku.capacity),
     skuCapacity = strcat(toupper(tostring(properties.sku.family)), tostring(toint(properties.sku.capacity))),
     skuName = tostring(properties.sku.name),
-    replicasPerMaster = iif(tostring(properties.sku.name) =~ "Basic", 0, 1),
-    shardCountNormalized = iif(
+    replicasPerMaster = tostring(iif(tostring(properties.sku.name) =~ "Basic", 0, 1)),
+    shardCountNormalized = tostring(iif(
         isnull(toint(properties.shardCount)) or toint(properties.shardCount) == 0,
         1,
         toint(properties.shardCount)
-    )
+    )),
+    isVnetInjectedStr = tostring(isnotempty(vnetId))
 | project
-    ['Subscription ID'] = subscriptionId,
-    ['Resource Group'] = resourceGroup,
-    ['Region'] = location,
-    ['DB Name'] = name,
+    ['Subscription ID'] = tostring(subscriptionId),
+    ['Resource Group'] = tostring(resourceGroup),
+    ['Region'] = tostring(location),
+    ['DB Name'] = tostring(name),
     ['SKU Capacity'] = skuCapacity,
     ['SKU Name'] = skuName,
     ['Replicas per Master'] = replicasPerMaster,
     ['Shard Count'] = shardCountNormalized,
     ['Shard Number'] = shardCountNormalized,
-    isVnetInjected = isnotempty(vnetId)
-| order by ['Resource Group'] asc
+    isVnetInjected = isVnetInjectedStr
+)
+| union
+(
+resources
+| where type =~ 'Microsoft.Cache/redisEnterprise'
+| where tostring(sku.name) startswith "Enterprise_" or tostring(sku.name) startswith "EnterpriseFlash_"
+| extend skuSuffix = tostring(split(tostring(sku.name), "_")[-1])
+| project
+    ['Subscription ID'] = tostring(subscriptionId),
+    ['Resource Group'] = tostring(resourceGroup),
+    ['Region'] = tostring(location),
+    ['DB Name'] = tostring(name),
+    ['SKU Capacity'] = coalesce(skuSuffix, "n/a"),   // e.g., Enterprise_E5 -> E5
+    ['SKU Name'] = coalesce(tostring(sku.name), "n/a"),
+    ['Replicas per Master'] = "n/a",
+    ['Shard Count'] = "n/a",
+    ['Shard Number'] = "n/a",
+    isVnetInjected = "n/a"
+)
+| order by ['Resource Group'] asc, ['DB Name'] asc
