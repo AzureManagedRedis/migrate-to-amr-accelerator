@@ -1,9 +1,5 @@
 # The Azure PowerShell Az module is required.
 # See https://learn.microsoft.com/en-us/powershell/azure/install-azure-powershell?view=azps-10.3.0 for installation instructions
-# Add a flag to determine whether to pull ACRE clusters
-param(
-    [switch]$PullAcre
-)
 
 # Static config
 $METRIC_COLLECTION_PERIOD_DAYS = 7 # Look at last seven days of metrics when calculating statistics
@@ -147,11 +143,8 @@ foreach ($subscription in $subscriptions) {
     # Get all Azure Cache for Redis instances in the current subscription
     $subscriptionRedisInstances = Get-AzRedisCache
 
-    # Get all Azure Cache for Redis Enterprise instances if PullAcre flag is set
-    $subscriptionRedisEnterpriseInstances = @()
-    if ($PullAcre) {
-        $subscriptionRedisEnterpriseInstances = Get-AzResource -ResourceType "Microsoft.Cache/redisEnterprise" -ExpandProperties
-    }
+    # Get all Azure Cache for Redis Enterprise instances
+    $subscriptionRedisEnterpriseInstances = Get-AzResource -ResourceType "Microsoft.Cache/redisEnterprise" -ExpandProperties
 
     # Add SubscriptionID property to OSS instances and add to main array
     if ($subscriptionRedisInstances) {
@@ -164,7 +157,7 @@ foreach ($subscription in $subscriptions) {
     }
 
     # Add SubscriptionID property to Enterprise instances and add to main array
-    if ($PullAcre -and $subscriptionRedisEnterpriseInstances) {
+    if ($subscriptionRedisEnterpriseInstances) {
         foreach ($enterpriseInstance in $subscriptionRedisEnterpriseInstances) {
             if (-not $enterpriseInstance.PSObject.Properties.Match("SubscriptionID")) {
                 $enterpriseInstance | Add-Member -MemberType NoteProperty -Name "SubscriptionID" -Value $subscription.SubscriptionId

@@ -1,0 +1,26 @@
+resources
+| where type =~ 'Microsoft.Cache/redis'
+| extend vnetId = tostring(properties.subnetId)
+| extend
+    family = tostring(properties.sku.family),
+    capacityInt = toint(properties.sku.capacity),
+    skuCapacity = strcat(toupper(tostring(properties.sku.family)), tostring(toint(properties.sku.capacity))),
+    skuName = tostring(properties.sku.name),
+    replicasPerMaster = iif(tostring(properties.sku.name) =~ "Basic", 0, 1),
+    shardCountNormalized = iif(
+        isnull(toint(properties.shardCount)) or toint(properties.shardCount) == 0,
+        1,
+        toint(properties.shardCount)
+    )
+| project
+    ['Subscription ID'] = subscriptionId,
+    ['Resource Group'] = resourceGroup,
+    ['Region'] = location,
+    ['DB Name'] = name,
+    ['SKU Capacity'] = skuCapacity,
+    ['SKU Name'] = skuName,
+    ['Replicas per Master'] = replicasPerMaster,
+    ['Shard Count'] = shardCountNormalized,
+    ['Shard Number'] = shardCountNormalized,
+    isVnetInjected = isnotempty(vnetId)
+| order by ['Resource Group'] asc

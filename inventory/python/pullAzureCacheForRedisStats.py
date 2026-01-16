@@ -220,15 +220,12 @@ def get_subscription_info(credential):
             SubscriptionClient(credential=credential).subscriptions.list()]
 
 
-def list_clusters(credential, subscription_id, pullAcre):
+def list_clusters(credential, subscription_id):
     print(f"Gathering cluster information for subscription {subscription_id}")
 
     oss_clusters = list(RedisManagementClient(credential, subscription_id).redis.list())
     
-    enterprise_clusters = []
-
-    if pullAcre:
-        enterprise_clusters = list(RedisEnterpriseManagementClient(credential, subscription_id).redis_enterprise.list())
+    enterprise_clusters = list(RedisEnterpriseManagementClient(credential, subscription_id).redis_enterprise.list())
 
     return oss_clusters, enterprise_clusters
 
@@ -238,8 +235,6 @@ def main():
     parser.add_argument("-d", "--out-dir", dest="outDir", default=".",
                         help="directory to write the results in",
                         metavar="PATH")
-    
-    parser.add_argument("-e", "--pullAcre", action='store_true', help='Pull acre clusters')
 
     args = parser.parse_args()
     output_file_path = Path(args.outDir) / "AzureStats.xlsx"
