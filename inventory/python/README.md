@@ -41,6 +41,7 @@ python pullAzureCacheForRedisStats.py
 - Columns include:
   - Subscription, RG, Region
   - SKU Details
+  - **Redis Version**
   - **Avg Ops/Sec**
   - **Used Memory**
   - **Max Connections**
