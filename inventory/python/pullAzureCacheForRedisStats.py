@@ -163,7 +163,7 @@ def get_redis_version(cluster, subscription_id, credential, enterprise_client=No
         databases = list(enterprise_client.databases.list_by_cluster(get_resource_group(cluster), cluster.name))
     except (HttpResponseError, ResourceNotFoundError):
         return ""
-    except Exception:
+    except (AttributeError, TypeError):
         return ""
 
     if not databases:
@@ -181,7 +181,7 @@ def get_redis_version(cluster, subscription_id, credential, enterprise_client=No
     try:
         resource_client = ResourceManagementClient(credential, subscription_id)
         database_resource = resource_client.resources.get_by_id(database_id, '2024-09-01-preview')
-    except Exception:
+    except (HttpResponseError, ResourceNotFoundError, AttributeError, TypeError):
         return ""
 
     properties = getattr(database_resource, 'properties', None) or {}
