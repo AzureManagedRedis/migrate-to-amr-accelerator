@@ -188,7 +188,7 @@ def get_redis_version(cluster, subscription_id, credential, enterprise_client=No
     if isinstance(properties, dict):
         return properties.get('redisVersion', '')
 
-    return getattr(properties, 'redisVersion', '')
+    return ""
 
 
 def process_cluster(cluster, mc, subscription_id, credential, enterprise_client=None):
