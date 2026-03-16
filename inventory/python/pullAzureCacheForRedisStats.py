@@ -151,25 +151,23 @@ def get_resource_group(cluster):
     return cluster.id.split("/")[4]
 
 
-def get_redis_version(cluster, subscription_id, credential, enterprise_client=None):
+def get_redis_version(cluster, resource_client=None, enterprise_client=None):
     redis_version = getattr(cluster, 'redis_version', None)
     if redis_version:
         return redis_version
 
-    if cluster.type != 'Microsoft.Cache/redisEnterprise' or enterprise_client is None:
+    if cluster.type != 'Microsoft.Cache/redisEnterprise' or enterprise_client is None or resource_client is None:
         return ""
 
     try:
-        databases = list(enterprise_client.databases.list_by_cluster(get_resource_group(cluster), cluster.name))
+        database = next(iter(enterprise_client.databases.list_by_cluster(get_resource_group(cluster), cluster.name)), None)
     except (HttpResponseError, ResourceNotFoundError):
         return ""
     except (AttributeError, TypeError):
         return ""
 
-    if not databases:
+    if database is None:
         return ""
-
-    database = databases[0]
     redis_version = getattr(database, 'redis_version', None)
     if redis_version:
         return redis_version
@@ -179,7 +177,6 @@ def get_redis_version(cluster, subscription_id, credential, enterprise_client=No
         return ""
 
     try:
-        resource_client = ResourceManagementClient(credential, subscription_id)
         database_resource = resource_client.resources.get_by_id(database_id, '2024-09-01-preview')
     except (HttpResponseError, ResourceNotFoundError, AttributeError, TypeError):
         return ""
@@ -191,7 +188,7 @@ def get_redis_version(cluster, subscription_id, credential, enterprise_client=No
     return ""
 
 
-def process_cluster(cluster, mc, subscription_id, credential, enterprise_client=None):
+def process_cluster(cluster, mc, resource_client=None, enterprise_client=None):
     print(".", end="")
 
     # replicas per master is not reported by api for basic and standard tiers and for premium with default of one replica
@@ -210,7 +207,7 @@ def process_cluster(cluster, mc, subscription_id, credential, enterprise_client=
     }.get(cluster.sku.name)
 
     cluster_rows = []
-    redis_version = get_redis_version(cluster, subscription_id, credential, enterprise_client)
+    redis_version = get_redis_version(cluster, resource_client, enterprise_client)
 
     if cluster.type == 'Microsoft.Cache/redisEnterprise' and cluster.sku.name not in amrClusterInfo['SKU']:
         cluster_info = lookup_enterprise_sku_capcity(cluster.sku.name, cluster.sku.capacity)
@@ -272,8 +269,9 @@ def list_clusters(credential, subscription_id):
 
     enterprise_client = RedisEnterpriseManagementClient(credential, subscription_id)
     enterprise_clusters = list(enterprise_client.redis_enterprise.list())
+    resource_client = ResourceManagementClient(credential, subscription_id)
 
-    return oss_clusters, enterprise_clusters, enterprise_client
+    return oss_clusters, enterprise_clusters, enterprise_client, resource_client
 
 
 def main():
@@ -291,9 +289,9 @@ def main():
 
     metrics = [[sub_info[0]] + shard_stats
                for sub_info in get_subscription_info(azure_credential)
-               for oss_clusters, enterprise_clusters, enterprise_client in [list_clusters(azure_credential, sub_info[0])]
+               for oss_clusters, enterprise_clusters, enterprise_client, resource_client in [list_clusters(azure_credential, sub_info[0])]
                for cluster in oss_clusters + enterprise_clusters
-               for shard_stats in process_cluster(cluster, sub_info[1], sub_info[0], azure_credential, enterprise_client)]
+               for shard_stats in process_cluster(cluster, sub_info[1], resource_client, enterprise_client)]
 
     df = pd.DataFrame(metrics, columns=["Subscription ID",
                                         "Resource Group",
