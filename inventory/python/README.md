@@ -6,7 +6,7 @@ This tool pulls usage statistics for Azure Cache for Redis instances. It interac
 Use this script when you need detailed usage data (Operations/Sec, Used Memory, Connections) to assess the workload. This helps in right-sizing for migration.
 
 ## Prerequisites
-- **Python 3.8+**
+- **Python 3.11+** (Python 3.11 and 3.12 are tested and supported)
 - **Azure CLI** installed and logged in (`az login`)
 - Permissions to read **Monitoring Metrics** on the target subscriptions/resources.
 
@@ -25,14 +25,15 @@ python -m venv venv
 source venv/bin/activate
 
 # Install dependencies
-pip install -r ../../requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 ## Usage
 
-Run the script from the root or this directory (adjusting paths).
+Navigate to the script directory and run the script.
 
 ```bash
+cd inventory/python
 python pullAzureCacheForRedisStats.py
 ```
 

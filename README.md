@@ -55,7 +55,7 @@ These tools operate entirely with **Read-Only** permissions. No write, contribut
 
 ## Prerequisites
 - **Azure CLI** or **Azure PowerShell Module**
-- Python 3.8+ (for Python scripts)
+- Python 3.11+ (for Python scripts)
 - Read access to the Azure Subscriptions you wish to scan.
     - *Discovery*: Reader
     - *Inventory*: Monitoring Reader (to access metrics)
