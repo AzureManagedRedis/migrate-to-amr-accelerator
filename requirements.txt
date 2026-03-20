@@ -1,12 +1,12 @@
 azure-common==1.1.28
-azure-core==1.26.4
-azure-identity==1.12.0
-azure-mgmt-core>=1.5.0
+azure-core>=1.32.0,<2.0.0
+azure-identity>=1.19.0,<2.0.0
+azure-mgmt-core>=1.6.0,<2.0.0
 azure-mgmt-monitor==5.0.1
 azure-mgmt-redis==12.0.0
 azure-mgmt-redisenterprise==3.0.0
 azure-mgmt-resource>=24.0.0
 azure-mgmt-subscription==3.1.1
-numpy==1.24.3
-pandas==2.0.1
+numpy>=1.26.0,<3.0.0
+pandas>=2.1.0,<3.0.0
 XlsxWriter==3.1.0
